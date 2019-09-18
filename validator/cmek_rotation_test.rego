@@ -17,8 +17,8 @@
 package templates.gcp.GCPCMEKRotationConstraintV1
 
 all_violations[violation] {
-	resource := data.test.fixtures.assets.cmek_rotation[_]
-	constraint := data.test.fixtures.constraints.cmek_rotation
+	resource := data.test.fixtures.cmek_rotation.assets[_]
+	constraint := data.test.fixtures.cmek_rotation.constraints.one_year
 
 	issues := deny with input.asset as resource
 		 with input.constraint as constraint
@@ -27,8 +27,18 @@ all_violations[violation] {
 }
 
 all_violations_no_params[violation] {
-	resource := data.test.fixtures.assets.cmek_rotation[_]
-	constraint := data.test.fixtures.constraints.cmek_rotation_no_params
+	resource := data.test.fixtures.cmek_rotation.assets[_]
+	constraint := data.test.fixtures.cmek_rotation.constraints.no_params
+
+	issues := deny with input.asset as resource
+		 with input.constraint as constraint
+
+	violation := issues[_]
+}
+
+all_violations_exemptions[violation] {
+	resource := data.test.fixtures.cmek_rotation.assets[_]
+	constraint := data.test.fixtures.cmek_rotation.constraints.exemptions
 
 	issues := deny with input.asset as resource
 		 with input.constraint as constraint
@@ -48,4 +58,8 @@ test_cmek_rotation_violations_no_params_count {
 test_cmek_violations_basic {
 	violation := all_violations[_]
 	violation.details.resource == "//cloudkms.googleapis.com/projects/test-project/locations/us-central1/keyRings/test-key-ring/cryptoKeys/rotation-never"
+}
+
+test_cmek_rotation_violations_exemptions_count {
+	count(all_violations_exemptions) == 1
 }

@@ -40,8 +40,7 @@ spec:
               items: string
   targets:
    validation.gcp.forsetisecurity.org:
-      rego: |
-            #INLINE("validator/iam_allowed_bindings.rego")
+      rego: | #INLINE("validator/iam_allowed_bindings.rego")
             #
             # Copyright 2019 Google LLC
             #
@@ -85,6 +84,7 @@ spec:
             	message := sprintf("IAM policy for %v grants %v to %v", [asset.name, role, member])
             
             	metadata := {
+            		"resource": asset.name,
             		"member": member,
             		"role": role,
             	}
